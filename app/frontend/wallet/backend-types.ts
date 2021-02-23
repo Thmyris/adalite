@@ -94,7 +94,7 @@ declare type Token = {
 
 export type CoinObject = {
   getCoin: string
-  getTokens: Token[] | null
+  getTokens: Token[]
 }
 
 export type AddressCoinTuple = [string, CoinObject]
