@@ -40,6 +40,7 @@ import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
 import {_TxAux} from './shelley/types'
 import {_Output} from './types'
+import {aggregateTokens} from './helpers/tokenFormater'
 
 const DummyAddressManager = () => {
   return {
@@ -343,7 +344,7 @@ const Account = ({
       base
     )
     return {
-      tokenBalance: [...nonStakingTokens, ...stakingTokens],
+      tokenBalance: aggregateTokens([nonStakingTokens, stakingTokens]),
       baseAddressBalance,
       nonStakingBalance,
       balance: nonStakingBalance + baseAddressBalance,
