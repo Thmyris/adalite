@@ -2,7 +2,7 @@ import {roundWholeAdas} from '../helpers/adaConverters'
 import {Lovelace, _Address} from '../types'
 import getDonationAddress from '../helpers/getDonationAddress'
 import {computeRequiredTxFee} from './shelley/shelley-transaction-planner'
-import {OutputType, UTxO, _Output} from './types'
+import {UTxO, _Output} from './types'
 
 function getInputBalance(inputs: Array<UTxO>): Lovelace {
   return inputs.reduce((acc, input) => acc + input.coins, 0) as Lovelace
@@ -13,7 +13,7 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
   function getMaxSendableAmount(profitableInputs: Array<UTxO>, address: _Address) {
     const coins = getInputBalance(profitableInputs)
 
-    const outputs: _Output[] = [{type: OutputType.NO_CHANGE, address, coins: 0 as Lovelace}]
+    const outputs: _Output[] = [{isChange: false, address, coins: 0 as Lovelace, tokens: []}]
 
     const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
     return {sendAmount: Math.max(coins - txFee, 0) as Lovelace}
@@ -27,8 +27,8 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
     const coins = getInputBalance(profitableInputs)
 
     const outputs: _Output[] = [
-      {type: OutputType.NO_CHANGE, address, coins: 0 as Lovelace},
-      {type: OutputType.NO_CHANGE, address: getDonationAddress(), coins: 0 as Lovelace},
+      {isChange: false, address, coins: 0 as Lovelace, tokens: []},
+      {isChange: false, address: getDonationAddress(), coins: 0 as Lovelace, tokens: []},
     ]
 
     const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)

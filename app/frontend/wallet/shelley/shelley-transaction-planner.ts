@@ -23,7 +23,6 @@ import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
 import {
-  OutputType,
   UTxO,
   _Certificate,
   _DelegationCertificate,
@@ -86,9 +85,10 @@ export function estimateTxSize(
    * fee also in cases we dont know the amount of coins in advance
    */
   const txOutputs: _Output[] = outputs.map((output) => ({
-    type: OutputType.NO_CHANGE,
+    isChange: false,
     address: output.address,
     coins: Number.MAX_SAFE_INTEGER as Lovelace,
+    tokens: output.tokens,
   }))
   // TODO: max output size
   const txOutputsSize = encode(ShelleyTxOutputs(txOutputs)).length + 1
@@ -245,7 +245,12 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
     txPlanArgs: SendAdaTxPlanArgs | ConvertLegacyAdaTxPlanArgs
   ): TxPlanDraft => {
     const outputs: _Output[] = []
-    outputs.push({type: OutputType.NO_CHANGE, address: txPlanArgs.address, coins: txPlanArgs.coins})
+    outputs.push({
+      isChange: false,
+      address: txPlanArgs.address,
+      coins: txPlanArgs.coins,
+      tokens: [],
+    })
     return {
       outputs,
       certificates: [],
@@ -308,7 +313,12 @@ export const selectMinimalTxPlan = (
 ): TxPlanResult => {
   const inputs: _Input[] = []
   const {outputs, certificates, withdrawals} = prepareTxPlanDraft(txPlanArgs)
-  const change: _Output = {type: OutputType.NO_CHANGE, address: changeAddress, coins: 0 as Lovelace}
+  const change: _Output = {
+    isChange: false,
+    address: changeAddress,
+    coins: 0 as Lovelace,
+    tokens: [],
+  }
 
   // TODO: refactor this when implementing multi assets
   for (const utxo of utxos) {
