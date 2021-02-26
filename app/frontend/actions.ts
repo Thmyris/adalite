@@ -564,7 +564,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           state.sendAmount.coins,
             getSourceAccountInfo(state).balance as Lovelace
         )
-        : null // tokenAmountValidator(state.sendAmount.fieldValue, state.sendAmount.token.quantity, tokenBalance)
+        : null
+    // tokenAmountValidator
+    //(state.sendAmount.fieldValue, state.sendAmount.token.quantity, tokenBalance)
     setErrorState('sendAmountValidationError', sendAmountValidationError)
   }
 
@@ -676,16 +678,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const validateAndSetMaxFunds = (state: State, maxAmounts) => {
-    // TODO
-    return
-    // setState({
-    //   sendResponse: '',
-    //   sendAmount: {
-    //     fieldValue: printAda(maxAmounts.sendAmount),
-    //     coins: maxAmounts.sendAmount || null,
-    //   },
-    // })
-    // validateSendFormAndCalculateFee()
+    // TODO: some special validation
+
+    updateAmount(state, maxAmounts)
   }
 
   const sendMaxFunds = async (state: State) => {
@@ -693,7 +688,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     try {
       const maxAmounts = await wallet
         .getAccount(state.sourceAccountIndex)
-        .getMaxSendableAmount(state.sendAddress.fieldValue as _Address)
+        .getMaxSendableAmount(state.sendAddress.fieldValue as _Address, state.sendAmount)
       validateAndSetMaxFunds(state, maxAmounts)
     } catch (e) {
       setState({
@@ -711,7 +706,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const maxAmount = await wallet
       .getAccount(state.sourceAccountIndex)
       .getMaxNonStakingAmount(address)
-    const coins = maxAmount && maxAmount.sendAmount
+    const coins = maxAmount.assetType === AssetType.ADA && maxAmount.coins
     const txPlanResult = await prepareTxPlan({
       address,
       sendAmount,
