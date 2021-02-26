@@ -10,7 +10,7 @@ import Conversions from '../../common/conversions'
 import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
-import {getSourceAccountInfo, State} from '../../../state'
+import {getSourceAccountInfo, SendTransactionSummary, State} from '../../../state'
 import {useCallback, useState} from 'preact/hooks'
 import {AssetType, Lovelace, SendAmount, Token} from '../../../types'
 import {StarIcon} from '../../common/svg'
@@ -46,7 +46,7 @@ interface Props {
   feeRecalculating: any
   sendMaxFunds: any
   conversionRates: any
-  sendTransactionSummary: any
+  sendTransactionSummary: SendTransactionSummary
   transactionFee: any
   txSuccessTab: any
   balance: any
@@ -120,7 +120,9 @@ const SendAdaPage = ({
 
   const enableSubmit = sendAmount.fieldValue && sendAddress && !sendFormValidationError
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
-  const total = summary.amount + transactionFee
+  const total =
+    (summary.amount.isLovelace ? summary.amount.coins : summary.minimalLovelaceAmount) +
+    transactionFee
   const adaAsset: DropdownAssetItem = {
     type: AssetType.ADA,
     policyId: null,

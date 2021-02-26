@@ -200,13 +200,13 @@ export type Stakepool = {
 export type SendAdaTxPlanArgs = {
   txType: TxType.SEND_ADA
   address: _Address
-  coins: Lovelace
+  sendAmount: SendAmount
 }
 
 export type ConvertLegacyAdaTxPlanArgs = {
   txType: TxType.CONVERT_LEGACY
   address: _Address
-  coins: Lovelace
+  sendAmount: SendAmount
 }
 
 export type WithdrawRewardsTxPlanArgs = {

@@ -30,6 +30,7 @@ import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provid
 import {ShelleyWallet} from './wallet/shelley-wallet'
 import {parseUnsignedTx} from './helpers/cliParser/parser'
 import {
+  calculateMinUTxOLovelaceAmount,
   TxPlan,
   TxPlanResult,
   TxPlanResultType,
@@ -491,11 +492,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const setTransactionSummary = (
     tab, // TODO: add enum for tabs
     plan: TxPlan,
-    coins?: Lovelace
+    minimalLovelaceAmount: Lovelace,
+    sendAmount?: SendAmount,
+    rewards?: Lovelace
   ) => {
     setState({
       sendTransactionSummary: {
-        amount: coins || (0 as Lovelace),
+        amount: sendAmount,
+        minimalLovelaceAmount,
         fee: plan.fee,
         plan,
         tab,
@@ -507,7 +511,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const resetTransactionSummary = (state: State) => {
     setState({
       sendTransactionSummary: {
-        amount: 0 as Lovelace,
+        amount: {isLovelace: true, fieldValue: '', coins: 0 as Lovelace},
+        minimalLovelaceAmount: 0 as Lovelace,
         fee: 0 as Lovelace,
         plan: null,
         tab: state.sendTransactionSummary.tab,
@@ -593,15 +598,19 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
       return
     }
-    const coins = (state.sendAmount as any).coins // TODO
     // TODO: sendAddress should have a validated field of type _Address
     const address = state.sendAddress.fieldValue as _Address
     const txPlanResult = await prepareTxPlan({
       address,
-      coins,
+      sendAmount: state.sendAmount,
       txType: TxType.SEND_ADA,
     })
     const balance = getSourceAccountInfo(state).balance as Lovelace
+    const minimalLovelaceAmount = calculateMinUTxOLovelaceAmount(
+      state.sendAmount.isLovelace === true ? [] : [state.sendAmount.token]
+    )
+    const coins =
+      state.sendAmount.isLovelace === true ? state.sendAmount.coins : minimalLovelaceAmount
 
     if (txPlanResult.type === TxPlanResultType.SUCCESS) {
       const newState = getState() // if the values changed meanwhile
@@ -611,7 +620,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       ) {
         return
       }
-      setTransactionSummary('send', txPlanResult.txPlan, coins)
+      setTransactionSummary('send', txPlanResult.txPlan, minimalLovelaceAmount, state.sendAmount)
       setState({
         calculatingFee: false,
         txSuccessTab: '',
@@ -701,7 +710,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const coins = maxAmount && maxAmount.sendAmount
     const txPlanResult = await prepareTxPlan({
       address,
-      coins,
+      sendAmount: state.sendAmount,
       txType: TxType.CONVERT_LEGACY,
     })
     const balance = getSourceAccountInfo(state).balance as Lovelace
@@ -736,7 +745,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const balance = getSourceAccountInfo(state).balance as Lovelace
 
     if (txPlanResult.type === TxPlanResultType.SUCCESS) {
-      setTransactionSummary('stake', txPlanResult.txPlan, rewards)
+      setTransactionSummary('stake', txPlanResult.txPlan, 0 as Lovelace, undefined, rewards)
       await confirmTransaction(getState(), 'withdraw')
     } else {
       const withdrawalValidationError =
@@ -811,7 +820,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           delegationFee: txPlanResult.txPlan.fee + txPlanResult.txPlan.deposit,
         },
       })
-      setTransactionSummary('stake', txPlanResult.txPlan)
+      setTransactionSummary('stake', txPlanResult.txPlan, 0 as Lovelace)
       setState({
         calculatingDelegationFee: false,
         txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
