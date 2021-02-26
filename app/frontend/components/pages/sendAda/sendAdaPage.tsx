@@ -58,7 +58,6 @@ interface Props {
   setTargetAccount: any
   switchSourceAndTargetAccounts: any
   tokenBalance: Array<Token>
-  updateSendAsset: (assetType: AssetType, underlyingToken?: Token) => void
 }
 
 type DropdownAssetItem = Token & {
@@ -111,7 +110,6 @@ const SendAdaPage = ({
   setTargetAccount,
   switchSourceAndTargetAccounts,
   tokenBalance,
-  updateSendAsset,
 }: Props) => {
   let amountField: HTMLInputElement
   let submitTxBtn: HTMLButtonElement
@@ -121,8 +119,9 @@ const SendAdaPage = ({
   const enableSubmit = sendAmount.fieldValue && sendAddress && !sendFormValidationError
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
   const total =
-    (summary.amount.isLovelace ? summary.amount.coins : summary.minimalLovelaceAmount) +
-    transactionFee
+    (summary.amount?.assetType === AssetType.ADA
+      ? summary.amount.coins
+      : summary.minimalLovelaceAmount) + transactionFee
   const adaAsset: DropdownAssetItem = {
     type: AssetType.ADA,
     policyId: null,
@@ -150,14 +149,15 @@ const SendAdaPage = ({
   }
 
   const getDefaultItem = () => {
-    if (selectedAsset.type === AssetType.ADA) {
-      return adaAsset
-    }
-    const defaultItem = dropdownAssetItems.find(
-      (selectAsset: DropdownAssetItem) => selectAsset.policyId === selectedAsset.policyId
-    )
-    if (defaultItem) return defaultItem
-    updateSendAsset(AssetType.ADA)
+    // what was this logic?
+    // if (selectedAsset.type === AssetType.ADA) {
+    //   return adaAsset
+    // }
+    // const defaultItem = dropdownAssetItems.find(
+    //   (selectAsset: DropdownAssetItem) => selectAsset.policyId === selectedAsset.policyId
+    // )
+    // if (defaultItem) return defaultItem
+    // updateSendAsset(AssetType.ADA)
     return adaAsset
   }
 
@@ -173,36 +173,36 @@ const SendAdaPage = ({
       setSelectedAsset(dropdownAssetItem)
       if (dropdownAssetItem.type === AssetType.ADA) {
         updateAmount({
-          isLovelace: true,
+          assetType: AssetType.ADA,
           fieldValue: sendAmount.fieldValue,
           coins: parseCoins(sendAmount.fieldValue) || (0 as Lovelace),
         })
       } else if (dropdownAssetItem.type === AssetType.TOKEN) {
         updateAmount({
-          isLovelace: false,
+          assetType: AssetType.TOKEN,
           fieldValue: sendAmount.fieldValue,
           token: {
-            policyId: selectedAsset.policyId,
-            assetName: selectedAsset.assetName,
+            policyId: dropdownAssetItem.policyId,
+            assetName: dropdownAssetItem.assetName,
             quantity: parseFloat(sendAmount.fieldValue),
           },
         })
       }
     },
-    [selectedAsset, sendAmount.fieldValue, updateAmount]
+    [sendAmount.fieldValue, updateAmount]
   )
 
   const onInput = useCallback(
     (e) => {
       if (selectedAsset.type === AssetType.ADA) {
         updateAmount({
-          isLovelace: true,
+          assetType: AssetType.ADA,
           fieldValue: e?.target?.value,
           coins: parseCoins(e?.target?.value) || (0 as Lovelace),
         })
       } else if (selectedAsset.type === AssetType.TOKEN) {
         updateAmount({
-          isLovelace: false,
+          assetType: AssetType.TOKEN,
           fieldValue: e?.target?.value,
           token: {
             policyId: selectedAsset.policyId,

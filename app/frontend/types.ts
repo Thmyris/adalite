@@ -259,12 +259,12 @@ export const enum AssetType {
 
 export type SendAmount =
   | {
-      isLovelace: true
+      assetType: AssetType.ADA
       fieldValue: string
       coins: Lovelace
     }
   | {
-      isLovelace: false
+      assetType: AssetType.TOKEN
       fieldValue: string
       token: Token
     }

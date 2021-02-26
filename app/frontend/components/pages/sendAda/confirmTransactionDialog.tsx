@@ -7,7 +7,7 @@ import RawTransactionModal from './rawTransactionModal'
 import {SendTransactionSummary, State} from '../../../state'
 import AddressVerification from '../../common/addressVerification'
 import tooltip from '../../common/tooltip'
-import {Lovelace} from '../../../types'
+import {AssetType, Lovelace} from '../../../types'
 
 interface Props {
   sendAddress: any
@@ -40,7 +40,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
   }: Props) {
     // TODO: refactor all of this
     const summarySendAmount =
-      summary.amount?.isLovelace === true ? summary.amount?.coins : (0 as Lovelace)
+      summary.amount?.assetType === AssetType.ADA ? summary.amount?.coins : (0 as Lovelace)
     const totalAmount = (summarySendAmount + summary.fee + summary.deposit) as Lovelace
     const totalAmounts = {
       convert: summarySendAmount,
