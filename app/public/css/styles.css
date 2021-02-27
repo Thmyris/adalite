@@ -618,12 +618,14 @@ p.hey {
   cursor: pointer;
 }
 
+.searchable-select.focus {
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.06);
+}
+
 .searchable-select-dropdown {
   position: absolute;
   width: 100%;
   min-width: 0;
-  /* TODO: Make this dynamic, so we don't have to edit it every time Send ada page changes height */
-  /* max-height: 421px; */
   max-height: 331px;
   display: flex;
   flex-direction: column;

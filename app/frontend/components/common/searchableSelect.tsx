@@ -64,7 +64,9 @@ const SearchableSelect = <T extends {}>({
     >
       {label && <div className="searchable-select-label">{label}</div>}
       <div
-        className={`searchable-select ${optionalClassName(displaySelectedItemClassName)}`}
+        className={`searchable-select ${visible ? 'focus ' : ''}${optionalClassName(
+          displaySelectedItemClassName
+        )}`}
         onClick={() => showDropdown(!visible)}
       >
         {displaySelectedItem(value)}
