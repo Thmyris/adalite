@@ -1,4 +1,4 @@
-import {h} from 'preact'
+import {Fragment, h} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 
@@ -148,18 +148,7 @@ const SendAdaPage = ({
     await confirmTransaction('send')
   }
 
-  const getDefaultItem = () => {
-    // what was this logic?
-    // if (selectedAsset.type === AssetType.ADA) {
-    //   return adaAsset
-    // }
-    // const defaultItem = dropdownAssetItems.find(
-    //   (selectAsset: DropdownAssetItem) => selectAsset.policyId === selectedAsset.policyId
-    // )
-    // if (defaultItem) return defaultItem
-    // updateSendAsset(AssetType.ADA)
-    return adaAsset
-  }
+  const getDefaultItem = () => adaAsset
 
   const searchPredicate = useCallback(
     (query: string, {policyId, assetName}: DropdownAssetItem): boolean =>
@@ -244,21 +233,51 @@ const SendAdaPage = ({
           <AccountDropdown accountIndex={targetAccountIndex} setAccountFunc={setTargetAccount} />
         </div>
       )}
-      <SearchableSelect
-        label="Select asset"
-        defaultItem={getDefaultItem()}
-        displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
-          `${tokenBalanceWithAda.assetName}`
-        }
-        displaySelectedItemClassName="input dropdown"
-        items={dropdownAssetItems}
-        displayItem={showDropdownAssetItem}
-        onSelect={onSelect}
-        showSearch={dropdownAssetItems.length >= 6}
-        searchPredicate={searchPredicate}
-        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
-      />
+      {!isModal && (
+        <SearchableSelect
+          label="Select asset"
+          defaultItem={getDefaultItem()}
+          displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
+            `${tokenBalanceWithAda.assetName}`
+          }
+          displaySelectedItemClassName="input dropdown"
+          items={dropdownAssetItems}
+          displayItem={showDropdownAssetItem}
+          onSelect={onSelect}
+          showSearch={dropdownAssetItems.length >= 6}
+          searchPredicate={searchPredicate}
+          searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
+        />
+      )}
       <div className="send-values">
+        {isModal && (
+          <Fragment>
+            <label className="asset-dropdown-label">Asset</label>
+            <SearchableSelect
+              wrapperClassName="no-margin"
+              defaultItem={getDefaultItem()}
+              displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
+                `${tokenBalanceWithAda.assetName}`
+              }
+              displaySelectedItemClassName="input dropdown"
+              items={dropdownAssetItems}
+              displayItem={showDropdownAssetItem}
+              onSelect={onSelect}
+              showSearch={dropdownAssetItems.length >= 6}
+              searchPredicate={searchPredicate}
+              searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
+              dropdownClassName="modal-dropdown"
+              // TODO: replace this with something reasonable
+              dropdownStyle={(() => {
+                const modal = document.getElementsByClassName('modal-body')[0] as any
+                const width = modal?.clientWidth
+                const paddingLeft = modal && window.getComputedStyle(modal).paddingLeft
+                const paddingRight = modal && window.getComputedStyle(modal).paddingLeft
+                return `width: calc(${width} - ${paddingLeft} - ${paddingRight});`
+              })()}
+            />
+          </Fragment>
+        )}
         <label
           className={`ada-label amount ${selectedAsset.type === AssetType.TOKEN ? 'token' : ''}`}
           htmlFor={`${isModal ? 'account' : ''}send-amount`}
