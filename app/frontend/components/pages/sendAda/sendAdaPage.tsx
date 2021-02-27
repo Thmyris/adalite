@@ -157,51 +157,42 @@ const SendAdaPage = ({
     []
   )
 
-  const onSelect = useCallback(
-    (dropdownAssetItem: DropdownAssetItem): void => {
-      setSelectedAsset(dropdownAssetItem)
+  const updateSentAssetPair = useCallback(
+    (dropdownAssetItem: DropdownAssetItem, fieldValue: string) => {
       if (dropdownAssetItem.type === AssetType.ADA) {
         updateAmount({
           assetType: AssetType.ADA,
-          fieldValue: sendAmount.fieldValue,
-          coins: parseCoins(sendAmount.fieldValue) || (0 as Lovelace),
+          fieldValue,
+          coins: parseCoins(fieldValue) || (0 as Lovelace),
         })
       } else if (dropdownAssetItem.type === AssetType.TOKEN) {
         updateAmount({
           assetType: AssetType.TOKEN,
-          fieldValue: sendAmount.fieldValue,
+          fieldValue,
           token: {
             policyId: dropdownAssetItem.policyId,
             assetName: dropdownAssetItem.assetName,
-            quantity: parseFloat(sendAmount.fieldValue),
+            quantity: parseFloat(fieldValue),
           },
         })
       }
     },
-    [sendAmount.fieldValue, updateAmount]
+    [updateAmount]
+  )
+
+  const onSelect = useCallback(
+    (dropdownAssetItem: DropdownAssetItem): void => {
+      setSelectedAsset(dropdownAssetItem)
+      updateSentAssetPair(dropdownAssetItem, sendAmount.fieldValue)
+    },
+    [sendAmount.fieldValue, updateSentAssetPair]
   )
 
   const onInput = useCallback(
     (e) => {
-      if (selectedAsset.type === AssetType.ADA) {
-        updateAmount({
-          assetType: AssetType.ADA,
-          fieldValue: e?.target?.value,
-          coins: parseCoins(e?.target?.value) || (0 as Lovelace),
-        })
-      } else if (selectedAsset.type === AssetType.TOKEN) {
-        updateAmount({
-          assetType: AssetType.TOKEN,
-          fieldValue: e?.target?.value,
-          token: {
-            policyId: selectedAsset.policyId,
-            assetName: selectedAsset.assetName,
-            quantity: parseFloat(e?.target?.value),
-          },
-        })
-      }
+      updateSentAssetPair(selectedAsset, e?.target?.value)
     },
-    [selectedAsset, updateAmount]
+    [selectedAsset, updateSentAssetPair]
   )
 
   return (
