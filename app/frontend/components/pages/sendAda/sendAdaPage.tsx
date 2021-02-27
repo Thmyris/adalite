@@ -70,7 +70,8 @@ const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: Drop
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
         {star && <StarIcon />}
-        {assetName}
+        {/* TODO: this should converted be probably somewhere else */}
+        {type === AssetType.TOKEN ? Buffer.from(assetName, 'hex').toString() : assetName}
       </div>
       <div className="multi-asset-amount">
         {type === AssetType.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
