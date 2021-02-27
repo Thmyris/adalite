@@ -196,113 +196,126 @@ const SendAdaPage = ({
     [selectedAsset, updateSentAssetPair]
   )
 
+  const addressInput = (
+    <input
+      type="text"
+      id="send-address"
+      className={`input ${isModal ? '' : 'send-address'} fullwidth`}
+      name="send-address"
+      placeholder="Receiving address"
+      value={sendAddress}
+      onInput={updateAddress}
+      autoComplete="off"
+      onKeyDown={(e) => e.key === 'Enter' && amountField.focus()}
+      disabled={isModal}
+    />
+  )
+
+  const accountSwitch = (
+    <div className="send-values dropdowns">
+      <label className="account-label">From</label>
+      <AccountDropdown accountIndex={sourceAccountIndex} setAccountFunc={setSourceAccount} />
+      <button className="button account-switch" onClick={switchSourceAndTargetAccounts}>
+        Switch
+      </button>
+      <div />
+      <label className="account-label">To</label>
+      <AccountDropdown accountIndex={targetAccountIndex} setAccountFunc={setTargetAccount} />
+    </div>
+  )
+
+  const selectAssetDropdown = (
+    <SearchableSelect
+      label="Select asset"
+      defaultItem={getDefaultItem()}
+      displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
+        `${tokenBalanceWithAda.assetName}`
+      }
+      displaySelectedItemClassName="input dropdown"
+      items={dropdownAssetItems}
+      displayItem={showDropdownAssetItem}
+      onSelect={onSelect}
+      showSearch={dropdownAssetItems.length >= 6}
+      searchPredicate={searchPredicate}
+      searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
+    />
+  )
+
+  const selectAssetDropdownModal = (
+    <Fragment>
+      <label className="asset-dropdown-label">Asset</label>
+      <SearchableSelect
+        wrapperClassName="no-margin"
+        defaultItem={getDefaultItem()}
+        displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
+          `${tokenBalanceWithAda.assetName}`
+        }
+        displaySelectedItemClassName="input dropdown"
+        items={dropdownAssetItems}
+        displayItem={showDropdownAssetItem}
+        onSelect={onSelect}
+        showSearch={dropdownAssetItems.length >= 6}
+        searchPredicate={searchPredicate}
+        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
+        dropdownClassName="modal-dropdown"
+        // TODO: replace this with something reasonable
+        dropdownStyle={(() => {
+          const modal = document.getElementsByClassName('modal-body')[0] as any
+          const width = modal?.clientWidth
+          const paddingLeft = modal && window.getComputedStyle(modal).paddingLeft
+          const paddingRight = modal && window.getComputedStyle(modal).paddingLeft
+          return `width: calc(${width} - ${paddingLeft} - ${paddingRight});`
+        })()}
+      />
+    </Fragment>
+  )
+
+  const amountInput = (
+    <Fragment>
+      <label
+        className={`ada-label amount ${selectedAsset.type === AssetType.TOKEN ? 'token' : ''}`}
+        htmlFor={`${isModal ? 'account' : ''}send-amount`}
+      >
+        Amount
+      </label>
+      <div className="input-wrapper">
+        <input
+          className="input send-amount"
+          id={`${isModal ? 'account' : ''}send-amount`}
+          name={`${isModal ? 'account' : ''}send-amount`}
+          placeholder="0.000000"
+          value={sendAmount.fieldValue}
+          onInput={onInput}
+          autoComplete="off"
+          ref={(element) => {
+            amountField = element
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && submitTxBtn) {
+              submitTxBtn.click()
+              e.preventDefault()
+            }
+          }}
+        />
+        <button
+          className="button send-max"
+          onClick={sendMaxFunds}
+          disabled={!isSendAddressValid || !balance}
+        >
+          Max
+        </button>
+      </div>
+    </Fragment>
+  )
+
   return (
     <div className="send card">
       <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
-      {!isModal && (
-        <input
-          type="text"
-          id="send-address"
-          className={`input ${isModal ? '' : 'send-address'} fullwidth`}
-          name="send-address"
-          placeholder="Receiving address"
-          value={sendAddress}
-          onInput={updateAddress}
-          autoComplete="off"
-          onKeyDown={(e) => e.key === 'Enter' && amountField.focus()}
-          disabled={isModal}
-        />
-      )}
-      {isModal && (
-        <div className="send-values dropdowns">
-          <label className="account-label">From</label>
-          <AccountDropdown accountIndex={sourceAccountIndex} setAccountFunc={setSourceAccount} />
-          <button className="button account-switch" onClick={switchSourceAndTargetAccounts}>
-            Switch
-          </button>
-          <div />
-          <label className="account-label">To</label>
-          <AccountDropdown accountIndex={targetAccountIndex} setAccountFunc={setTargetAccount} />
-        </div>
-      )}
-      {!isModal && (
-        <SearchableSelect
-          label="Select asset"
-          defaultItem={getDefaultItem()}
-          displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
-            `${tokenBalanceWithAda.assetName}`
-          }
-          displaySelectedItemClassName="input dropdown"
-          items={dropdownAssetItems}
-          displayItem={showDropdownAssetItem}
-          onSelect={onSelect}
-          showSearch={dropdownAssetItems.length >= 6}
-          searchPredicate={searchPredicate}
-          searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
-        />
-      )}
+      {isModal ? accountSwitch : addressInput}
+      {!isModal && selectAssetDropdown}
       <div className="send-values">
-        {isModal && (
-          <Fragment>
-            <label className="asset-dropdown-label">Asset</label>
-            <SearchableSelect
-              wrapperClassName="no-margin"
-              defaultItem={getDefaultItem()}
-              displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
-                `${tokenBalanceWithAda.assetName}`
-              }
-              displaySelectedItemClassName="input dropdown"
-              items={dropdownAssetItems}
-              displayItem={showDropdownAssetItem}
-              onSelect={onSelect}
-              showSearch={dropdownAssetItems.length >= 6}
-              searchPredicate={searchPredicate}
-              searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
-              dropdownClassName="modal-dropdown"
-              // TODO: replace this with something reasonable
-              dropdownStyle={(() => {
-                const modal = document.getElementsByClassName('modal-body')[0] as any
-                const width = modal?.clientWidth
-                const paddingLeft = modal && window.getComputedStyle(modal).paddingLeft
-                const paddingRight = modal && window.getComputedStyle(modal).paddingLeft
-                return `width: calc(${width} - ${paddingLeft} - ${paddingRight});`
-              })()}
-            />
-          </Fragment>
-        )}
-        <label
-          className={`ada-label amount ${selectedAsset.type === AssetType.TOKEN ? 'token' : ''}`}
-          htmlFor={`${isModal ? 'account' : ''}send-amount`}
-        >
-          Amount
-        </label>
-        <div className="input-wrapper">
-          <input
-            className="input send-amount"
-            id={`${isModal ? 'account' : ''}send-amount`}
-            name={`${isModal ? 'account' : ''}send-amount`}
-            placeholder="0.000000"
-            value={sendAmount.fieldValue}
-            onInput={onInput}
-            autoComplete="off"
-            ref={(element) => {
-              amountField = element
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && submitTxBtn) {
-                submitTxBtn.click()
-                e.preventDefault()
-              }
-            }}
-          />
-          <button
-            className="button send-max"
-            onClick={sendMaxFunds}
-            disabled={!isSendAddressValid || !balance}
-          >
-            Max
-          </button>
-        </div>
+        {isModal && selectAssetDropdownModal}
+        {amountInput}
         <div className="ada-label">Fee</div>
         <div className="send-fee">{printAda(transactionFee)}</div>
       </div>
