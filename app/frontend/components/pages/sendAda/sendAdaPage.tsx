@@ -24,6 +24,7 @@ import {
 import {AdaIcon, StarIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
 import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
+import tooltip from '../../common/tooltip'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -280,7 +281,7 @@ const SendAdaPage = ({
 
   const selectAssetDropdown = (
     <Fragment>
-      <label className="asset-dropdown-label">Asset</label>
+      <label className="send-label">Asset</label>
       <SearchableSelect
         wrapperClassName="no-margin"
         defaultItem={selectedAsset}
@@ -344,24 +345,56 @@ const SendAdaPage = ({
         {amountInput}
         <div className="ada-label">Fee</div>
         <div className="send-fee">{printAda(transactionFee)}</div>
+        {selectedAsset.type === AssetType.TOKEN && (
+          <Fragment>
+            <div className="send-label">
+              Min ADA
+              <a
+                {...tooltip(
+                  'Every output created by a transaction must include a minimum amount of ada, which is calculated based on the size of the output.',
+                  true
+                )}
+              >
+                <span className="show-info">{''}</span>
+              </a>
+            </div>
+            {/* TODO: Connect to state when this values is calculated */}
+            <div className="send-fee">{printAda(2000000 as Lovelace)}</div>
+          </Fragment>
+        )}
       </div>
       <div className="send-total">
         <div className="send-total-title">Total</div>
         <div className="send-total-inner">
-          <div className="send-total-ada">
-            {printAda(totalLovelace)}
-            <AdaIcon />
-          </div>
-          {conversionRates && (
-            <Conversions balance={totalLovelace} conversionRates={conversionRates} />
-          )}
-          {totalTokens && enableSubmit && (
+          {selectedAsset.type === AssetType.ADA ? (
             <div className="send-total-ada">
-              {totalTokens.quantity}
-              {assetNameHex2Readable(totalTokens.assetName)}
+              {printAda(totalLovelace)}
+              <AdaIcon />
+            </div>
+          ) : (
+            <div className="send-total-ada">
+              {totalTokens?.quantity != null ? totalTokens.quantity : 0}{' '}
+              {totalTokens ? assetNameHex2Readable(totalTokens.assetName) : selectedAsset.assetName}
             </div>
           )}
+          {selectedAsset.type === AssetType.ADA
+            ? conversionRates && (
+              <Conversions balance={totalLovelace} conversionRates={conversionRates} />
+            )
+            : ''}
         </div>
+        <div />
+        {selectedAsset.type === AssetType.TOKEN && (
+          <div className="send-total-inner ma-ada-fees">
+            <div>
+              +{printAda(totalLovelace)}
+              <AdaIcon />
+            </div>
+            {conversionRates && (
+              <Conversions balance={totalLovelace} conversionRates={conversionRates} />
+            )}
+          </div>
+        )}
       </div>
       <div className="validation-row">
         <button

@@ -711,11 +711,6 @@ p.hey {
   z-index: 1;
 }
 
-.asset-dropdown-label {
-  justify-self: end;
-  padding-right: 16px;
-}
-
 /* FORM GLOBAL */
 
 .form-message-field {
@@ -3503,6 +3498,11 @@ input:checked + .slider:before {
   color: var(--color-grey);
 }
 
+.send-label {
+  justify-self: end;
+  padding-right: 16px;
+}
+
 .ada-label {
   padding-right: 16px;
   position: relative;
@@ -3621,6 +3621,21 @@ input:checked + .slider:before {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.send-total .ma-ada-fees {
+  text-align: left;
+  padding-left: 16px;
+  color: var(--color-grey);
+}
+
+.send-total .ma-ada-fees svg {
+  padding-left: 2px;
+  height: 10px;
+}
+
+.send-total .ma-ada-fees svg path {
+  fill: var(--color-grey);
 }
 
 .review {
