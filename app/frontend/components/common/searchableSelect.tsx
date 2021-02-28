@@ -95,7 +95,7 @@ const SearchableSelect = <T extends {}>({
               <div
                 className={`searchable-select-item ${shouldShowItem(item) ? '' : 'hide'}`}
                 key={i}
-                onClick={() => {
+                onMouseDown={() => {
                   setVisible(false)
                   onSelect(item)
                 }}
