@@ -256,21 +256,6 @@ const SendAdaPage = ({
   )
 
   const selectAssetDropdown = (
-    <SearchableSelect
-      label="Select asset"
-      defaultItem={selectedAsset}
-      displaySelectedItem={({assetName}: DropdownAssetItem) => assetName}
-      displaySelectedItemClassName="input dropdown"
-      items={dropdownAssetItems}
-      displayItem={showDropdownAssetItem}
-      onSelect={handleDropdownOnSelect}
-      showSearch={dropdownAssetItems.length >= 4}
-      searchPredicate={searchPredicate}
-      searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
-    />
-  )
-
-  const selectAssetDropdownModal = (
     <Fragment>
       <label className="asset-dropdown-label">Asset</label>
       <SearchableSelect
@@ -339,9 +324,8 @@ const SendAdaPage = ({
     <div className="send card">
       <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
       {isModal ? accountSwitch : addressInput}
-      {!isModal && selectAssetDropdown}
       <div className="send-values">
-        {isModal && selectAssetDropdownModal}
+        {selectAssetDropdown}
         {amountInput}
         <div className="ada-label">Fee</div>
         <div className="send-fee">{printAda(transactionFee)}</div>
