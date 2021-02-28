@@ -7,7 +7,6 @@ import {
   ShelleyTxWithdrawals,
 } from './shelley-transaction'
 import {MAX_TX_SIZE, TX_WITNESS_SIZES} from '../constants'
-import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
 import {
   Lovelace,
@@ -390,7 +389,8 @@ export const selectMinimalTxPlan = (
     tokens: [],
   }
 
-  // TODO: refactor this when implementing multi assets
+  // TODO: refactor this
+  let txPlanResult: TxPlanResult
   for (const utxo of utxos) {
     inputs.push(utxo)
     try {
@@ -401,30 +401,19 @@ export const selectMinimalTxPlan = (
         txPlan: plan,
       }
     } catch (e) {
-      if (inputs.length === utxos.length) {
-        return {
-          success: false,
-          estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
-          error: {code: e.name},
-          minimalLovelaceAmount: outputs.reduce(
-            (acc, output) =>
-              acc + computeMinUTxOLovelaceAmount(output.address, output.coins, output.tokens),
-            0
-          ) as Lovelace,
-        }
+      txPlanResult = {
+        success: false,
+        estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
+        error: {code: e.name},
+        minimalLovelaceAmount: outputs.reduce(
+          (acc, output) =>
+            acc + computeMinUTxOLovelaceAmount(output.address, output.coins, output.tokens),
+          0
+        ) as Lovelace,
       }
     }
   }
-  return {
-    success: false,
-    estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
-    minimalLovelaceAmount: outputs.reduce(
-      (acc, output) =>
-        acc + computeMinUTxOLovelaceAmount(output.address, output.coins, output.tokens),
-      0
-    ) as Lovelace,
-    error: {code: 'CannotConstructTxPlan'},
-  }
+  return txPlanResult
 }
 
 export const unsignedPoolTxToTxPlan = (unsignedTx, ownerCredentials): TxPlan => {
