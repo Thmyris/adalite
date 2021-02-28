@@ -1137,6 +1137,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       await reloadWalletInfo(state)
       wallet.getAccount(state.sourceAccountIndex).generateNewSeeds()
       resetAccountIndexes(state)
+      resetDelegation()
       selectAdaliteStakepool(state)
       setState({
         waitingForHwWallet: false,
@@ -1228,6 +1229,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({activeMainTab: mainTab})
     resetTransactionSummary(state)
     resetSendFormFields(state)
+    resetDelegation()
+    if (mainTab === MainTabs.STAKING) selectAdaliteStakepool(state)
   }
 
   const closeUnexpectedErrorModal = (state) => {
