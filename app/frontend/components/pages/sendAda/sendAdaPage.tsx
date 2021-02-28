@@ -11,7 +11,7 @@ import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
-import {useCallback, useMemo, useRef, useState} from 'preact/hooks'
+import {useCallback, useMemo, useRef} from 'preact/hooks'
 import {
   AssetType,
   Lovelace,
@@ -177,7 +177,16 @@ const SendAdaPage = ({
     [adaAsset, tokenBalance]
   )
 
-  const [selectedAsset, setSelectedAsset] = useState(adaAsset)
+  const selectedAsset = useMemo(() => {
+    if (sendAmount.assetType === AssetType.ADA) {
+      return adaAsset
+    }
+    return dropdownAssetItems.find(
+      (item) =>
+        item.assetNameHex === sendAmount.token.assetName &&
+        item.policyId === sendAmount.token.policyId
+    )
+  }, [adaAsset, dropdownAssetItems, sendAmount])
 
   const submitHandler = async () => {
     await confirmTransaction('send')
@@ -215,7 +224,6 @@ const SendAdaPage = ({
 
   const handleDropdownOnSelect = useCallback(
     (dropdownAssetItem: DropdownAssetItem): void => {
-      setSelectedAsset(dropdownAssetItem)
       updateSentAssetPair(dropdownAssetItem, sendAmount.fieldValue)
     },
     [sendAmount.fieldValue, updateSentAssetPair]
