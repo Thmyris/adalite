@@ -11,7 +11,7 @@ import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
-import {useCallback, useMemo, useState} from 'preact/hooks'
+import {useCallback, useMemo, useRef, useState} from 'preact/hooks'
 import {
   AssetType,
   Lovelace,
@@ -142,6 +142,7 @@ const SendAdaPage = ({
 }: Props) => {
   let amountField: HTMLInputElement
   let submitTxBtn: HTMLButtonElement
+  const sendCardDiv = useRef<HTMLDivElement>(null)
 
   const sendFormValidationError = sendAddressValidationError || sendAmountValidationError
 
@@ -255,6 +256,20 @@ const SendAdaPage = ({
     </div>
   )
 
+  // TODO: is this possible to do in raw CSS?
+  // dropdown width is dependand on div that is much higher in HTML DOM
+  const calculateDropdownWidth = () => {
+    const deriveFrom = sendCardDiv?.current
+    if (deriveFrom) {
+      const style = window.getComputedStyle(deriveFrom)
+      const width = deriveFrom.clientWidth
+      const paddingLeft = parseInt(style.paddingLeft, 10)
+      const paddingRight = parseInt(style.paddingRight, 10)
+      return `${width - paddingLeft - paddingRight}px`
+    }
+    return '100%'
+  }
+
   const selectAssetDropdown = (
     <Fragment>
       <label className="asset-dropdown-label">Asset</label>
@@ -270,14 +285,7 @@ const SendAdaPage = ({
         searchPredicate={searchPredicate}
         searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
         dropdownClassName="modal-dropdown"
-        // TODO: replace this with something reasonable
-        dropdownStyle={(() => {
-          const modal = document.getElementsByClassName('modal-body')[0] as any
-          const width = modal?.clientWidth
-          const paddingLeft = modal && window.getComputedStyle(modal).paddingLeft
-          const paddingRight = modal && window.getComputedStyle(modal).paddingLeft
-          return `width: calc(${width} - ${paddingLeft} - ${paddingRight});`
-        })()}
+        getDropdownWidth={calculateDropdownWidth}
       />
     </Fragment>
   )
@@ -321,7 +329,7 @@ const SendAdaPage = ({
   )
 
   return (
-    <div className="send card">
+    <div className="send card" ref={sendCardDiv}>
       <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
       {isModal ? accountSwitch : addressInput}
       <div className="send-values">
