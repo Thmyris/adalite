@@ -259,7 +259,7 @@ const SendAdaPage = ({
       items={dropdownAssetItems}
       displayItem={showDropdownAssetItem}
       onSelect={handleDropdownOnSelect}
-      showSearch={dropdownAssetItems.length >= 6}
+      showSearch={dropdownAssetItems.length >= 4}
       searchPredicate={searchPredicate}
       searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
     />
@@ -278,7 +278,7 @@ const SendAdaPage = ({
         items={dropdownAssetItems}
         displayItem={showDropdownAssetItem}
         onSelect={handleDropdownOnSelect}
-        showSearch={dropdownAssetItems.length >= 6}
+        showSearch={dropdownAssetItems.length >= 4}
         searchPredicate={searchPredicate}
         searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
         dropdownClassName="modal-dropdown"

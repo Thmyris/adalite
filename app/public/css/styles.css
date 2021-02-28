@@ -660,6 +660,7 @@ p.hey {
   border: none;
   background-color: white;
   z-index: 1;
+  font-family: JTMarnie, Arial, Helvetica, sans-serif;
 }
 
 .searchable-select-input:focus {
