@@ -8,7 +8,7 @@ import {State} from '../../../state'
 import AddressVerification from '../../common/addressVerification'
 import tooltip from '../../common/tooltip'
 import {
-  AssetType,
+  AssetFamily,
   DelegateTransactionSummary,
   Lovelace,
   SendTransactionSummary,
@@ -38,7 +38,7 @@ const SendAdaReview = ({
 }) => {
   const {sendAddress, sendAmount, fee} = transactionSummary
   const summarySendAmount =
-    sendAmount.assetType === AssetType.ADA ? sendAmount.coins : (0 as Lovelace)
+    sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (0 as Lovelace)
   const total = (summarySendAmount + fee) as Lovelace
 
   return (
@@ -146,7 +146,7 @@ const ConvertFundsReview = ({
 }) => {
   const {sendAddress, sendAmount, fee} = transactionSummary
   const summarySendAmount =
-    sendAmount.assetType === AssetType.ADA ? sendAmount.coins : (0 as Lovelace)
+    sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (0 as Lovelace)
   const total = (summarySendAmount + fee) as Lovelace
   return (
     <Fragment>
@@ -257,7 +257,7 @@ const ConfirmTransactionDialog = ({
 //   }: Props) {
 //     // TODO: refactor all of this
 //     const summarySendAmount =
-//       summary.amount?.assetType === AssetType.ADA ? summary.amount?.coins : (0 as Lovelace)
+//       summary.amount?.assetFamily === AssetFamily.ADA ? summary.amount?.coins : (0 as Lovelace)
 //     const totalAmount = (summarySendAmount + summary.fee + summary.deposit) as Lovelace
 //     const totalAmounts = {
 //       convert: summarySendAmount,

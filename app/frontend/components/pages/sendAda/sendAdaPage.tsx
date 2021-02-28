@@ -13,7 +13,7 @@ import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
 import {useCallback, useMemo, useRef} from 'preact/hooks'
 import {
-  AssetType,
+  AssetFamily,
   Lovelace,
   SendAmount,
   SendTransactionSummary,
@@ -72,7 +72,7 @@ interface Props {
 
 type DropdownAssetItem = Token & {
   assetNameHex: string
-  type: AssetType
+  type: AssetFamily
   star?: boolean
 }
 
@@ -84,7 +84,7 @@ const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: Drop
         {assetName}
       </div>
       <div className="multi-asset-amount">
-        {type === AssetType.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
+        {type === AssetFamily.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
       </div>
     </div>
     {policyId && (
@@ -100,13 +100,13 @@ const calculateTotalAmounts = (transactionSummary: TransactionSummary) => {
   const zeroTotal = {totalLovelace: 0 as Lovelace, totalTokens: null}
   if (!transactionSummary || transactionSummary.type !== TxType.SEND_ADA) return zeroTotal
   const {sendAmount, fee, minimalLovelaceAmount} = transactionSummary
-  if (sendAmount.assetType === AssetType.ADA) {
+  if (sendAmount.assetFamily === AssetFamily.ADA) {
     return {
       totalLovelace: (sendAmount.coins + fee) as Lovelace,
       totalTokens: null,
     }
   }
-  if (sendAmount.assetType === AssetType.TOKEN) {
+  if (sendAmount.assetFamily === AssetFamily.TOKEN) {
     return {
       totalLovelace: (minimalLovelaceAmount + fee) as Lovelace,
       totalTokens: sendAmount.token,
@@ -153,7 +153,7 @@ const SendAdaPage = ({
   const {totalLovelace, totalTokens} = calculateTotalAmounts(summary)
 
   const adaAsset: DropdownAssetItem = {
-    type: AssetType.ADA,
+    type: AssetFamily.ADA,
     policyId: null,
     assetName: 'ADA',
     assetNameHex: null,
@@ -170,7 +170,7 @@ const SendAdaPage = ({
             ...token,
             assetNameHex: token.assetName,
             assetName: assetNameHex2Readable(token.assetName),
-            type: AssetType.TOKEN,
+            type: AssetFamily.TOKEN,
             star: false,
           })
         ),
@@ -179,7 +179,7 @@ const SendAdaPage = ({
   )
 
   const selectedAsset = useMemo(() => {
-    if (sendAmount.assetType === AssetType.ADA) {
+    if (sendAmount.assetFamily === AssetFamily.ADA) {
       return adaAsset
     }
     return dropdownAssetItems.find(
@@ -202,15 +202,15 @@ const SendAdaPage = ({
 
   const updateSentAssetPair = useCallback(
     (dropdownAssetItem: DropdownAssetItem, fieldValue: string) => {
-      if (dropdownAssetItem.type === AssetType.ADA) {
+      if (dropdownAssetItem.type === AssetFamily.ADA) {
         updateAmount({
-          assetType: AssetType.ADA,
+          assetFamily: AssetFamily.ADA,
           fieldValue,
           coins: parseCoins(fieldValue) || (0 as Lovelace),
         })
-      } else if (dropdownAssetItem.type === AssetType.TOKEN) {
+      } else if (dropdownAssetItem.type === AssetFamily.TOKEN) {
         updateAmount({
-          assetType: AssetType.TOKEN,
+          assetFamily: AssetFamily.TOKEN,
           fieldValue,
           token: {
             policyId: dropdownAssetItem.policyId,
@@ -302,7 +302,7 @@ const SendAdaPage = ({
   const amountInput = (
     <Fragment>
       <label
-        className={`ada-label amount ${selectedAsset.type === AssetType.TOKEN ? 'token' : ''}`}
+        className={`ada-label amount ${selectedAsset.type === AssetFamily.TOKEN ? 'token' : ''}`}
         htmlFor={`${isModal ? 'account' : ''}send-amount`}
       >
         Amount
@@ -345,7 +345,7 @@ const SendAdaPage = ({
         {amountInput}
         <div className="ada-label">Fee</div>
         <div className="send-fee">{printAda(transactionFee)}</div>
-        {selectedAsset.type === AssetType.TOKEN && (
+        {selectedAsset.type === AssetFamily.TOKEN && (
           <Fragment>
             <div className="send-label">
               Min ADA
@@ -366,7 +366,7 @@ const SendAdaPage = ({
       <div className="send-total">
         <div className="send-total-title">Total</div>
         <div className="send-total-inner">
-          {selectedAsset.type === AssetType.ADA ? (
+          {selectedAsset.type === AssetFamily.ADA ? (
             <div className="send-total-ada">
               {printAda(totalLovelace)}
               <AdaIcon />
@@ -377,14 +377,14 @@ const SendAdaPage = ({
               {totalTokens ? assetNameHex2Readable(totalTokens.assetName) : selectedAsset.assetName}
             </div>
           )}
-          {selectedAsset.type === AssetType.ADA
+          {selectedAsset.type === AssetFamily.ADA
             ? conversionRates && (
               <Conversions balance={totalLovelace} conversionRates={conversionRates} />
             )
             : ''}
         </div>
         <div />
-        {selectedAsset.type === AssetType.TOKEN && (
+        {selectedAsset.type === AssetFamily.TOKEN && (
           <div className="send-total-inner ma-ada-fees">
             <div>
               +{printAda(totalLovelace)}
