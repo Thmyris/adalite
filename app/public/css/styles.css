@@ -567,6 +567,7 @@ p.hey {
   padding: 0;
   margin-top: -16px;
   margin-bottom: -16px;
+  margin-right: 16px;
 }
 
 /* ACCORDIONS */
@@ -3532,6 +3533,7 @@ input:checked + .slider:before {
   line-height: 32px;
   align-self: center;
   justify-self: end;
+  padding-right: 16px;
 }
 
 .show-info::after {
