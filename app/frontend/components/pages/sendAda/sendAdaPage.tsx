@@ -140,8 +140,8 @@ const SendAdaPage = ({
   switchSourceAndTargetAccounts,
   tokenBalance,
 }: Props) => {
-  let amountField: HTMLInputElement
-  let submitTxBtn: HTMLButtonElement
+  const amountField = useRef<HTMLInputElement>(null)
+  const submitTxBtn = useRef<HTMLButtonElement>(null)
   const sendCardDiv = useRef<HTMLDivElement>(null)
 
   const sendFormValidationError = sendAddressValidationError || sendAmountValidationError
@@ -238,7 +238,7 @@ const SendAdaPage = ({
       value={sendAddress}
       onInput={updateAddress}
       autoComplete="off"
-      onKeyDown={(e) => e.key === 'Enter' && amountField.focus()}
+      onKeyDown={(e) => e.key === 'Enter' && amountField?.current.focus()}
       disabled={isModal}
     />
   )
@@ -307,12 +307,11 @@ const SendAdaPage = ({
           value={sendAmount.fieldValue}
           onInput={handleAmountOnInput}
           autoComplete="off"
-          ref={(element) => {
-            amountField = element
-          }}
+          ref={amountField}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && submitTxBtn) {
-              submitTxBtn.click()
+              // eslint-disable-next-line no-unused-expressions
+              submitTxBtn?.current.click()
               e.preventDefault()
             }
           }}
@@ -361,9 +360,7 @@ const SendAdaPage = ({
           className="button primary medium"
           disabled={!enableSubmit || feeRecalculating}
           onClick={submitHandler}
-          ref={(element) => {
-            submitTxBtn = element
-          }}
+          ref={submitTxBtn}
         >
           Send
         </button>
