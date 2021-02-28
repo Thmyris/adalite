@@ -58,7 +58,7 @@ const SearchableSelect = <T extends {}>({
 
   return (
     <div
-      className={`searchable-select-wrapper no-outline ${optionalClassName(wrapperClassName)}`}
+      className={`searchable-select-wrapper ${optionalClassName(wrapperClassName)}`}
       tabIndex={0}
       onBlur={() => !showSearch && showDropdown(false)}
     >

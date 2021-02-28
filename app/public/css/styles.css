@@ -57,6 +57,10 @@
   box-sizing: inherit;
 }
 
+* *:focus, *:hover{
+  outline: none;
+}
+
 html {
   height: 100%;
   font-size: 14px;
@@ -161,10 +165,6 @@ p.hey {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.no-outline .no-outline:focus, .no-outline:hover{
-  outline:none;
 }
 
 /* SELECTABILITY */
