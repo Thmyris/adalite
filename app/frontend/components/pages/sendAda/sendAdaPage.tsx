@@ -21,7 +21,7 @@ import {
   TransactionSummary,
   TxType,
 } from '../../../types'
-import {StarIcon} from '../../common/svg'
+import {AdaIcon, StarIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
 import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
 
@@ -346,7 +346,10 @@ const SendAdaPage = ({
       <div className="send-total">
         <div className="send-total-title">Total</div>
         <div className="send-total-inner">
-          <div className="send-total-ada">{printAda(totalLovelace)} ADA</div>
+          <div className="send-total-ada">
+            {printAda(totalLovelace)}
+            <AdaIcon />
+          </div>
           {conversionRates && (
             <Conversions balance={totalLovelace} conversionRates={conversionRates} />
           )}
