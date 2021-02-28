@@ -11,7 +11,7 @@ import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
-import {useCallback, useState} from 'preact/hooks'
+import {useCallback, useMemo, useState} from 'preact/hooks'
 import {
   AssetType,
   Lovelace,
@@ -70,6 +70,7 @@ interface Props {
 }
 
 type DropdownAssetItem = Token & {
+  assetNameHex: string
   type: AssetType
   star?: boolean
 }
@@ -79,7 +80,7 @@ const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: Drop
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
         {star && <StarIcon />}
-        {type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}
+        {assetName}
       </div>
       <div className="multi-asset-amount">
         {type === AssetType.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
@@ -153,21 +154,27 @@ const SendAdaPage = ({
     type: AssetType.ADA,
     policyId: null,
     assetName: 'ADA',
+    assetNameHex: null,
     quantity: balance,
     star: true,
   }
-  const dropdownAssetItems: Array<DropdownAssetItem> = [
-    adaAsset,
-    ...tokenBalance
-      .sort((a: Token, b: Token) => b.quantity - a.quantity)
-      .map(
-        (token: Token): DropdownAssetItem => ({
-          ...token,
-          type: AssetType.TOKEN,
-          star: false,
-        })
-      ),
-  ]
+  const dropdownAssetItems: Array<DropdownAssetItem> = useMemo(
+    () => [
+      adaAsset,
+      ...tokenBalance
+        .sort((a: Token, b: Token) => b.quantity - a.quantity)
+        .map(
+          (token: Token): DropdownAssetItem => ({
+            ...token,
+            assetNameHex: token.assetName,
+            assetName: assetNameHex2Readable(token.assetName),
+            type: AssetType.TOKEN,
+            star: false,
+          })
+        ),
+    ],
+    [adaAsset, tokenBalance]
+  )
 
   const [selectedAsset, setSelectedAsset] = useState(adaAsset)
 
@@ -196,7 +203,7 @@ const SendAdaPage = ({
           fieldValue,
           token: {
             policyId: dropdownAssetItem.policyId,
-            assetName: dropdownAssetItem.assetName,
+            assetName: dropdownAssetItem.assetNameHex,
             quantity: parseFloat(fieldValue),
           },
         })
@@ -252,9 +259,7 @@ const SendAdaPage = ({
     <SearchableSelect
       label="Select asset"
       defaultItem={selectedAsset}
-      displaySelectedItem={({type, assetName}: DropdownAssetItem) =>
-        `${type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}`
-      }
+      displaySelectedItem={({assetName}: DropdownAssetItem) => assetName}
       displaySelectedItemClassName="input dropdown"
       items={dropdownAssetItems}
       displayItem={showDropdownAssetItem}
@@ -271,9 +276,7 @@ const SendAdaPage = ({
       <SearchableSelect
         wrapperClassName="no-margin"
         defaultItem={selectedAsset}
-        displaySelectedItem={({type, assetName}: DropdownAssetItem) =>
-          `${type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}`
-        }
+        displaySelectedItem={({assetName}: DropdownAssetItem) => assetName}
         displaySelectedItemClassName="input dropdown"
         items={dropdownAssetItems}
         displayItem={showDropdownAssetItem}
