@@ -16,6 +16,7 @@ import {
   TxType,
   WithdrawTransactionSummary,
 } from '../../../types'
+import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
 
 interface Props {
   sendAddress: any
@@ -36,10 +37,11 @@ const SendAdaReview = ({
   transactionSummary: TransactionSummary & SendTransactionSummary
   shouldShowAddressVerification: boolean
 }) => {
-  const {sendAddress, sendAmount, fee} = transactionSummary
+  const {sendAddress, sendAmount, fee, minimalLovelaceAmount} = transactionSummary
   const summarySendAmount =
     sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (0 as Lovelace)
-  const total = (summarySendAmount + fee) as Lovelace
+  const total = (summarySendAmount + fee + minimalLovelaceAmount) as Lovelace
+  const summaryToken = sendAmount.assetFamily === AssetFamily.TOKEN ? sendAmount.token : null
 
   return (
     <Fragment>
@@ -53,9 +55,23 @@ const SendAdaReview = ({
         </div>
         {/* TODO: Hide ADA symbol when handling tokens */}
         <div className="ada-label">Amount</div>
-        <div className="review-amount">{printAda(summarySendAmount)}</div>
+        <div className="review-amount">
+          {printAda((summarySendAmount + minimalLovelaceAmount) as Lovelace)}
+        </div>
         <div className="ada-label">Fee</div>
         <div className="review-fee">{printAda(transactionSummary.fee as Lovelace)}</div>
+        {summaryToken && (
+          <Fragment>
+            <div className="review-label">Token policy Id</div>
+            <div className="review-amount">{summaryToken.policyId}</div>
+            <div className="review-label">Token name</div>
+            <div className="review-amount">{assetNameHex2Readable(summaryToken.assetName)}</div>
+            <div className="review-label">Token amount</div>
+            <div className="review-amount">{summaryToken.quantity}</div>
+            {/* <div className="ada-label">Minimal Lovelace amount</div>
+            <div className="review-amount">{printAda(minimalLovelaceAmount)}</div> */}
+          </Fragment>
+        )}
         {/* TODO: Hide ADA symbol when handling tokens */}
         <div className="ada-label">Total</div>
         <div className="review-total">{printAda(total)}</div>
