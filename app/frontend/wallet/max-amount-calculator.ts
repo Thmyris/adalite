@@ -1,7 +1,7 @@
 import {AssetFamily, Lovelace, SendAmount, _Address} from '../types'
 import getDonationAddress from '../helpers/getDonationAddress'
 import {
-  calculateMinUTxOLovelaceAmount,
+  computeMinUTxOLovelaceAmount,
   computeRequiredTxFee,
 } from './shelley/shelley-transaction-planner'
 import {UTxO, _Output} from './types'
@@ -23,8 +23,8 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
     // to be precise we should pass the tokens that are the beggest when cborized
     if (sendAmount.assetFamily === AssetFamily.ADA) {
       const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
-      const minUTxOLovelaceAmount = calculateMinUTxOLovelaceAmount(tokens)
       const coins = getInputBalance(profitableInputs)
+      const minUTxOLovelaceAmount = computeMinUTxOLovelaceAmount(address, coins, tokens)
       // TODO: edge case, if the amount of ada is too low an we cant split it into two outputs
       const outputs: _Output[] = [
         {isChange: false, address, coins: 0 as Lovelace, tokens: []},
