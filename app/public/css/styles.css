@@ -3459,7 +3459,7 @@ input:checked + .slider:before {
 
 .multi-asset-hash {
   display: flex;
-  padding-right: 16px;
+  padding-right: 128px;
 }
 
 .transactions-empty {
