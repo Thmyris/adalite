@@ -19,7 +19,6 @@ import {
   SendTransactionSummary,
   Token,
   TransactionSummary,
-  TxType,
 } from '../../../types'
 import {AdaIcon, StarIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
@@ -131,7 +130,8 @@ const SendAdaPage = ({
   const enableSubmit = sendAmount.fieldValue && sendAddress && !sendFormValidationError
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
 
-  const totalLovelace = (summary.coins + summary.fee + summary.minimalLovelaceAmount) as Lovelace
+  const totalLovelace =
+    ((summary.coins + summary.fee + summary.minimalLovelaceAmount) as Lovelace) || (0 as Lovelace)
   const totalTokens = summary.token
 
   const adaAsset: DropdownAssetItem = {

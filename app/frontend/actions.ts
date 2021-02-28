@@ -692,10 +692,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateSendFormAndCalculateFee()
   }
 
-  const validateAndSetMaxFunds = (state: State, maxAmounts) => {
+  const validateAndSetMaxFunds = (state: State, maxAmount: SendAmount) => {
     // TODO: some special validation
 
-    updateAmount(state, maxAmounts)
+    updateAmount(state, maxAmount)
   }
 
   const sendMaxFunds = async (state: State) => {
@@ -719,7 +719,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const address = await wallet.getAccount(state.sourceAccountIndex).getChangeAddress()
     const sendAmount = await wallet
       .getAccount(state.sourceAccountIndex)
-      .getMaxNonStakingAmount(address)
+      // TODO: we should pass something more sensible
+      .getMaxNonStakingAmount(address, {
+        assetFamily: AssetFamily.ADA,
+        fieldValue: '',
+        coins: 0 as Lovelace,
+      })
     const coins = sendAmount.assetFamily === AssetFamily.ADA && sendAmount.coins
     const txPlanResult = await prepareTxPlan({
       address,

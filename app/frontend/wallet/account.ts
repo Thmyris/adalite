@@ -257,15 +257,9 @@ const Account = ({
     return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
-  async function getMaxDonationAmount(address: _Address, sendAmount: Lovelace) {
-    const utxos = (await getUtxos()).filter(isUtxoProfitable)
-    return _getMaxDonationAmount(utxos, address, sendAmount)
-  }
-
-  async function getMaxNonStakingAmount(address: _Address) {
+  async function getMaxNonStakingAmount(address: _Address, sendAmount: SendAmount) {
     const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
-    // TODO: sendAmount instead of null
-    return _getMaxSendableAmount(utxos, address, null)
+    return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
   const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
@@ -476,7 +470,6 @@ const Account = ({
     getBalance,
     getChangeAddress,
     getMaxSendableAmount,
-    getMaxDonationAmount,
     getMaxNonStakingAmount,
     getTxPlan,
     getTxHistory,

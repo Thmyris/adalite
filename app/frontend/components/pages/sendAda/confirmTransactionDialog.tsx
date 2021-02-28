@@ -1,4 +1,4 @@
-import {h, Component, Fragment} from 'preact'
+import {h, Fragment} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
@@ -8,7 +8,6 @@ import {State} from '../../../state'
 import AddressVerification from '../../common/addressVerification'
 import tooltip from '../../common/tooltip'
 import {
-  AssetFamily,
   DelegateTransactionSummary,
   Lovelace,
   SendTransactionSummary,
@@ -39,7 +38,7 @@ const SendAdaReview = ({
 }) => {
   const {address, coins, fee, minimalLovelaceAmount, token} = transactionSummary
   const lovelaceAmount = (coins + minimalLovelaceAmount) as Lovelace
-  const total = (coins + fee) as Lovelace
+  const total = (coins + fee + minimalLovelaceAmount) as Lovelace
 
   return (
     <Fragment>
@@ -51,9 +50,7 @@ const SendAdaReview = ({
         </div>
         {/* TODO: Hide ADA symbol when handling tokens */}
         <div className="ada-label">Amount</div>
-        <div className="review-amount">
-          {printAda((lovelaceAmount) as Lovelace)}
-        </div>
+        <div className="review-amount">{printAda(lovelaceAmount as Lovelace)}</div>
         {token && (
           <Fragment>
             <div className="review-label">Token policy Id</div>
