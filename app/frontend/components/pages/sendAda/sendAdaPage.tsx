@@ -205,7 +205,7 @@ const SendAdaPage = ({
     [updateAmount]
   )
 
-  const onSelect = useCallback(
+  const handleDropdownOnSelect = useCallback(
     (dropdownAssetItem: DropdownAssetItem): void => {
       setSelectedAsset(dropdownAssetItem)
       updateSentAssetPair(dropdownAssetItem, sendAmount.fieldValue)
@@ -213,7 +213,7 @@ const SendAdaPage = ({
     [sendAmount.fieldValue, updateSentAssetPair]
   )
 
-  const onInput = useCallback(
+  const handleAmountOnInput = useCallback(
     (e) => {
       updateSentAssetPair(selectedAsset, e?.target?.value)
     },
@@ -258,7 +258,7 @@ const SendAdaPage = ({
       displaySelectedItemClassName="input dropdown"
       items={dropdownAssetItems}
       displayItem={showDropdownAssetItem}
-      onSelect={onSelect}
+      onSelect={handleDropdownOnSelect}
       showSearch={dropdownAssetItems.length >= 6}
       searchPredicate={searchPredicate}
       searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
@@ -277,7 +277,7 @@ const SendAdaPage = ({
         displaySelectedItemClassName="input dropdown"
         items={dropdownAssetItems}
         displayItem={showDropdownAssetItem}
-        onSelect={onSelect}
+        onSelect={handleDropdownOnSelect}
         showSearch={dropdownAssetItems.length >= 6}
         searchPredicate={searchPredicate}
         searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
@@ -309,7 +309,7 @@ const SendAdaPage = ({
           name={`${isModal ? 'account' : ''}send-amount`}
           placeholder="0.000000"
           value={sendAmount.fieldValue}
-          onInput={onInput}
+          onInput={handleAmountOnInput}
           autoComplete="off"
           ref={(element) => {
             amountField = element
