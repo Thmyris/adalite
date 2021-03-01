@@ -146,6 +146,7 @@ const SendAdaPage = ({
     quantity: balance,
     star: true,
   }
+
   const dropdownAssetItems: Array<DropdownAssetItem> = useMemo(
     () => [
       adaAsset,
@@ -289,7 +290,7 @@ const SendAdaPage = ({
         onSelect={handleDropdownOnSelect}
         showSearch={dropdownAssetItems.length >= 4}
         searchPredicate={searchPredicate}
-        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
+        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or policy ID`}
         dropdownClassName="modal-dropdown"
         getDropdownWidth={calculateDropdownWidth}
       />
