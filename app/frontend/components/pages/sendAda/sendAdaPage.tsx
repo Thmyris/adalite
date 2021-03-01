@@ -333,7 +333,7 @@ const SendAdaPage = ({
               Min ADA
               <a
                 {...tooltip(
-                  'Every output created by a transaction must include a minimum amount of ada, which is calculated based on the size of the output.',
+                  'Every transaction must include a minimum amount of ada, which is calculated based on the size of the transaction.',
                   true
                 )}
               >
