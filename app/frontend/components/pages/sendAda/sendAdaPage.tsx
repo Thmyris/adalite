@@ -294,7 +294,7 @@ const SendAdaPage = ({
           className="input send-amount"
           id={`${isModal ? 'account' : ''}send-amount`}
           name={`${isModal ? 'account' : ''}send-amount`}
-          placeholder="0.000000"
+          placeholder={selectedAsset.type === AssetFamily.ADA ? '0.000000' : '0'}
           value={sendAmount.fieldValue}
           onInput={handleAmountOnInput}
           autoComplete="off"
