@@ -205,6 +205,17 @@ const SendAdaPage = ({
     [updateAmount]
   )
 
+  const displayDropdownSelectedItem = ({assetName, policyId}: DropdownAssetItem) => (
+    <div className="wrapper">
+      {assetName}
+      {selectedAsset.type === AssetFamily.TOKEN && (
+        <div className="hash">
+          (<div className="ellipsis">{policyId}</div>)
+        </div>
+      )}
+    </div>
+  )
+
   const handleDropdownOnSelect = useCallback(
     (dropdownAssetItem: DropdownAssetItem): void => {
       updateSentAssetPair(dropdownAssetItem, sendAmount.fieldValue)
@@ -267,7 +278,7 @@ const SendAdaPage = ({
       <SearchableSelect
         wrapperClassName="no-margin"
         defaultItem={selectedAsset}
-        displaySelectedItem={({assetName}: DropdownAssetItem) => assetName}
+        displaySelectedItem={displayDropdownSelectedItem}
         displaySelectedItemClassName="input dropdown"
         items={dropdownAssetItems}
         displayItem={showDropdownAssetItem}
