@@ -1,5 +1,6 @@
 import CopyOnClick from '../../common/copyOnClick'
 import {h} from 'preact'
+import {StateUpdater} from 'preact/hooks'
 
 export const CopyPoolId = ({value}) => {
   return (
@@ -29,6 +30,24 @@ export const LinkIconToKey = ({stakeKey}) => (
   <LinkIcon url={`https://cardanoscan.io/stakekey/${stakeKey}`} />
 )
 
-export const LinkToAsset = ({policyIdHex, assetNameHex}) => (
-  <LinkIcon url={`https://cardanoscan.io/token/${policyIdHex}.${assetNameHex}`} />
+export type LinkToAsset = {
+  policyIdHex: string
+  assetNameHex: string
+  setPreventBlur?: StateUpdater<boolean>
+}
+
+export const LinkToAsset = ({policyIdHex, assetNameHex, setPreventBlur}: LinkToAsset) => (
+  <span className="link">
+    <a
+      className="link-icon"
+      href={`https://cardanoscan.io/token/${policyIdHex}.${assetNameHex}`}
+      target="_blank"
+      rel="noopener"
+      onMouseDown={(e) => {
+        // e.stopPropagation()
+        console.log('lopata1')
+        setPreventBlur && setPreventBlur(true)
+      }}
+    />
+  </span>
 )

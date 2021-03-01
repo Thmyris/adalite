@@ -11,7 +11,7 @@ import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
-import {useCallback, useMemo, useRef} from 'preact/hooks'
+import {StateUpdater, useCallback, useMemo, useRef} from 'preact/hooks'
 import {
   AssetFamily,
   Lovelace,
@@ -24,6 +24,7 @@ import {AdaIcon, StarIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
 import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
 import tooltip from '../../common/tooltip'
+import {LinkToAsset} from '../delegations/common'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -75,13 +76,10 @@ type DropdownAssetItem = Token & {
   star?: boolean
 }
 
-const displayDropdownAssetItem = ({
-  type,
-  star,
-  assetName,
-  policyId,
-  quantity,
-}: DropdownAssetItem) => (
+const displayDropdownAssetItem = (
+  {type, star, assetName, policyId, quantity}: DropdownAssetItem,
+  setPreventBlur: StateUpdater<boolean>
+) => (
   <div className="multi-asset-item">
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
@@ -90,6 +88,9 @@ const displayDropdownAssetItem = ({
           <span className="empty">
             {'<'}no-name{'>'}
           </span>
+        )}
+        {type === AssetFamily.TOKEN && (
+          <LinkToAsset policyIdHex={''} assetNameHex={''} setPreventBlur={setPreventBlur} />
         )}
       </div>
       <div className="multi-asset-amount">
