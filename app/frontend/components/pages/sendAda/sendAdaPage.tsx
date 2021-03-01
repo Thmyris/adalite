@@ -11,7 +11,7 @@ import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
-import {StateUpdater, useCallback, useMemo, useRef} from 'preact/hooks'
+import {useCallback, useMemo, useRef} from 'preact/hooks'
 import {
   AssetFamily,
   Lovelace,
@@ -76,10 +76,13 @@ type DropdownAssetItem = Token & {
   star?: boolean
 }
 
-const displayDropdownAssetItem = (
-  {type, star, assetName, policyId, quantity}: DropdownAssetItem,
-  setPreventBlur: StateUpdater<boolean>
-) => (
+const displayDropdownAssetItem = ({
+  type,
+  star,
+  assetName,
+  policyId,
+  quantity,
+}: DropdownAssetItem) => (
   <div className="multi-asset-item">
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
@@ -89,9 +92,7 @@ const displayDropdownAssetItem = (
             {'<'}no-name{'>'}
           </span>
         )}
-        {type === AssetFamily.TOKEN && (
-          <LinkToAsset policyIdHex={''} assetNameHex={''} setPreventBlur={setPreventBlur} />
-        )}
+        {type === AssetFamily.TOKEN && <LinkToAsset policyIdHex={''} assetNameHex={''} />}
       </div>
       <div className="multi-asset-amount">
         {type === AssetFamily.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}

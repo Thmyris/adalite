@@ -2,7 +2,7 @@ import {h} from 'preact'
 import {connect} from '../../helpers/connect'
 import actions from '../../actions'
 import {State} from '../../state'
-import {StateUpdater, useEffect, useLayoutEffect, useRef, useState} from 'preact/hooks'
+import {useEffect, useLayoutEffect, useRef, useState} from 'preact/hooks'
 
 interface Props<T> {
   wrapperClassName?: string
@@ -11,7 +11,7 @@ interface Props<T> {
   items: T[]
   displaySelectedItem: (t: T) => string | h.JSX.Element
   displaySelectedItemClassName?: string
-  displayItem: (t: T, setPreventBlur: StateUpdater<boolean>) => string | h.JSX.Element
+  displayItem: (t: T) => string | h.JSX.Element
   onSelect: (t: T) => void
   showSearch: boolean
   searchPredicate: (query: string, t: T) => boolean
@@ -41,7 +41,6 @@ const SearchableSelect = <T extends {}>({
   const [visible, setVisible] = useState(false)
   const [dropdownWidth, setDropdownWidth] = useState(getDropdownWidth())
   const [search, setSearch] = useState('')
-  const [preventBlur, setPreventBlur] = useState(false)
   const shouldShowItem = (item: T) => searchPredicate(search, item)
   const showDropdown = (bool: boolean) => {
     setVisible(bool)
@@ -67,21 +66,11 @@ const SearchableSelect = <T extends {}>({
 
   const optionalClassName = (className?: string) => (className != null ? className : '')
 
-  const consumeBlurEvent = (f: () => void): (() => void) =>
-    // preventBlur ? () => setPreventBlur(false) : f
-    preventBlur
-      ? () => {
-        console.log('lopata2')
-        return setPreventBlur(false)
-      }
-      : f
-
-  console.log('render')
   return (
     <div
       className={`searchable-select-wrapper ${optionalClassName(wrapperClassName)}`}
       tabIndex={0}
-      onBlur={consumeBlurEvent(() => !showSearch && showDropdown(false))}
+      onBlur={() => !showSearch && showDropdown(false)}
     >
       {label && <div className="searchable-select-label">{label}</div>}
       <div
@@ -106,7 +95,7 @@ const SearchableSelect = <T extends {}>({
             className="searchable-select-input"
             value={search}
             onInput={(event: any) => setSearch(event.target.value)}
-            onBlur={consumeBlurEvent(() => showDropdown(false))}
+            onBlur={() => showDropdown(false)}
             placeholder={searchPlaceholder}
           />
         )}
@@ -117,13 +106,11 @@ const SearchableSelect = <T extends {}>({
                 className={`searchable-select-item ${shouldShowItem(item) ? '' : 'hide'}`}
                 key={i}
                 onMouseDown={() => {
-                  if (!preventBlur) {
-                    setVisible(false)
-                    onSelect(item)
-                  }
+                  setVisible(false)
+                  onSelect(item)
                 }}
               >
-                {displayItem(item, setPreventBlur)}
+                {displayItem(item)}
               </div>
             ))}
         </div>
