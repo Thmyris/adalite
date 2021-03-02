@@ -66,11 +66,13 @@ const SearchableSelect = <T extends {}>({
 
   const optionalClassName = (className?: string) => (className != null ? className : '')
 
+  const delay = (f: () => void) => () => setTimeout(f, 150)
+
   return (
     <div
       className={`searchable-select-wrapper ${optionalClassName(wrapperClassName)}`}
       tabIndex={0}
-      onBlur={() => !showSearch && showDropdown(false)}
+      onBlur={delay(() => !showSearch && showDropdown(false))}
     >
       {label && <div className="searchable-select-label">{label}</div>}
       <div
@@ -95,7 +97,7 @@ const SearchableSelect = <T extends {}>({
             className="searchable-select-input"
             value={search}
             onInput={(event: any) => setSearch(event.target.value)}
-            onBlur={() => showDropdown(false)}
+            onBlur={delay(() => showDropdown(false))}
             placeholder={searchPlaceholder}
           />
         )}
@@ -105,10 +107,10 @@ const SearchableSelect = <T extends {}>({
               <div
                 className={`searchable-select-item ${shouldShowItem(item) ? '' : 'hide'}`}
                 key={i}
-                onMouseDown={() => {
+                onMouseDown={delay(() => {
                   setVisible(false)
                   onSelect(item)
-                }}
+                })}
               >
                 {displayItem(item)}
               </div>

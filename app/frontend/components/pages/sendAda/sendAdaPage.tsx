@@ -80,6 +80,7 @@ const displayDropdownAssetItem = ({
   type,
   star,
   assetName,
+  assetNameHex,
   policyId,
   quantity,
 }: DropdownAssetItem) => (
@@ -92,7 +93,9 @@ const displayDropdownAssetItem = ({
             {'<'}no-name{'>'}
           </span>
         )}
-        {type === AssetFamily.TOKEN && <LinkToAsset policyIdHex={''} assetNameHex={''} />}
+        {type === AssetFamily.TOKEN && (
+          <LinkToAsset policyIdHex={policyId} assetNameHex={assetNameHex} />
+        )}
       </div>
       <div className="multi-asset-amount">
         {type === AssetFamily.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
